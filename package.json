@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha ./src/actions/*.spec.js* ./src/reducers/*.spec.js* ./src/redux/*.spec.js* ./src/react-redux/*.spec.js* --compilers js:babel-register --require ./setup-jsdom.js -w"
+    "start": "node server.js"
   },
-  "author": "ReactJS Academy",
+  "author": "@kobotoolbox",
   "license": "GPL-3.0",
   "dependencies": {
     "react": "^15.4.1",
