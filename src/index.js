@@ -21,7 +21,13 @@ const testwords = ["It", "was", "the", "best", "of", "times,", "it",
 "noisiest", "authorities", "insisted", "on", "its",
 "being", "received,", "for", "good", "or", "for",
 "evil,", "in", "the", "superlative", "degree", "of",
-"comparison", "only."];
+"comparison", "only."].map((word)=>{
+  return {
+    text: word,
+  }
+});
+
+import {WordList} from './WordList';
 
 
 function stc (element, params) {
@@ -47,7 +53,7 @@ stc(document.getElementById("app"), {
       code: "30s_current_word",
     },
   ],
-  words: testwords,
+  words: new WordList(testwords),
 }).then(function (params) {
   console.log("Widget completed with params", params);
 });

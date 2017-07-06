@@ -5,9 +5,40 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STC Literacy Widget</title>
+    <style type="text/css">
+      .lit-widget {
+        font-family: Arial;
+      }
+      .lit-widget__wordlist {
+        user-select: none;
+      }
+      .lit-widget__word {
+        display: inline-block;
+        padding: 11px 5px;
+        margin: 2px 0.5px;
+        cursor: pointer;
+        font-size: 32px;
+        border-radius: 3px;
+      }
+      .lit-widget__word--status-CORRECT {
+        background-color: #def1e1;
+        color: #006710;
+      }
+      .lit-widget__word--status-INCORRECT {
+        background-color: #f3cc9b;
+        color: #86500d;
+      }
+      .lit-widget__word--status-IMPLIED_CORRECT {
+        background-color: #def1e1;
+        color: #008e16;
+      }
+    </style>
   </head>
   <body>
-    <div id='app'></div>
+    <div class='paper'>
+      <div id='app'>
+      </div>
+    </div>
     <script src="/bundle.js"></script>
   </body>
 </html>
