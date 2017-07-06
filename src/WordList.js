@@ -36,4 +36,9 @@ export class WordList {
     }
     return this;
   }
+  export () {
+    return {
+      words: this.words.toJS(),
+    }
+  }
 }

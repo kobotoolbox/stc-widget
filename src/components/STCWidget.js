@@ -40,10 +40,7 @@ export class STCWidget extends React.Component {
     });
   }
   finish = ()=> {
-    this.props.onComplete({
-      time: 0,
-      words: false,
-    })
+    this.props.onComplete(this.state.words.export());
   }
   clickWord = (event) => {
     let words = this.state.words;
