@@ -20,7 +20,7 @@ export class WordList {
   toggleWordStatus = ({index}) => {
     let status = CORRECT;
     let words = this.words;
-    if (words.getIn([index, 'status']) === CORRECT) {
+    if ([CORRECT, IMPLIED_CORRECT].indexOf(words.getIn([index, 'status'])) > -1) {
       status = INCORRECT;
     }
     words = words.setIn([index, 'time'], new Date())
