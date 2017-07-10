@@ -36,6 +36,9 @@ export class WordList {
     }
     return this;
   }
+  countWordsByStatus = (passedStatus) => {
+    return this.words.toJS().filter(word => word.status == passedStatus).length;
+  }
   export () {
     return {
       words: this.words.toJS(),

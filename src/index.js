@@ -45,28 +45,33 @@ function stc (element, params) {
 }
 
 stc(document.getElementById("app"), {
-  seconds: 10,
+  seconds: 60,
   actions: [
+    {
+      time: 0,
+      message: "Finished!!!",
+      code: "30s_current_word",
+      type: "FINISH",
+      wordsCondition: null
+    },
     {
       time: 30,
       message: "please select the current word",
-      code: "30s_current_word",
+      code: "...",
       type: "FLASH",
-      conditions: null
+      wordsCondition: null
     },
-    // {
-    //   time: 10,
-    //   message: "please select the current word",
-    //   code: "",
-    //   type: "FINISH",
-    //   wordConditions: {
-    //     status: 'READ',
-    //     count: 10,
-    //   }
-    // },
-  ],
-  stops: [
-    
+    {
+      time: 50,
+      message: "Child has not read 5 words in 10 seconds",
+      code: "...",
+      type: "FINISH",
+      wordsCondition: {
+        status: 'UNREAD',
+        operator: ">",
+        value: 5,
+      }
+    },
   ],
   words: new WordList(testwords),
 }).then(function (params) {

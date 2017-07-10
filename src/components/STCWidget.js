@@ -51,17 +51,43 @@ export class STCWidget extends React.Component {
   }
   tick = ()=> {
     this.setState({remaining: this.state.remaining - 1}, ()=> {
-      switch (this.state.remaining) {
-        case 0:
-          this.finish();
-      }
+      this.props.actions.map(action => {
+        if(this.state.remaining == action.time) {
+          if(this.checkActionCondition(action.wordsCondition)){
+            switch(action.type){
+              case "FINISH":
+                this.finish();
+                break;
+              case "FLASH":
+                alert(action.message);
+                break;
+            }
+          }
+        }
+      });
     });
+  }
+  checkActionCondition(condition) {
+    const operators = {
+      "==": (x, y) => { return x == y; },
+      "===": (x, y) => { return x === y; },
+      ">": (x, y) => { return x > y; },
+      "<": (x, y) => { return x < y; },
+      "<=": (x, y) => { return x <= y; },
+      ">=": (x, y) => { return x >= y; },
+      "!=": (x, y) => { return x != y; },
+      "!==": (x, y) => { return x !== y; },
+    }
+    if(condition != null) {
+      const count = this.state.words.countWordsByStatus(condition.status);
+      return operators[condition.operator](count, condition.value);
+    }else{
+      return true;
+    }
   }
   finish = ()=> {
     clearInterval(this.interval);
-    this.setState({
-      stage: TIMER_COMPLETE,
-    }, this.props.onComplete(this.state.words.export()));
+    this.setState({ stage: TIMER_COMPLETE, }, this.props.onComplete(this.state.words.export()));
   }
   clickWord = (event) => {
     let words = this.state.words;
