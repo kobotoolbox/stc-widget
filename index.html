@@ -8,9 +8,16 @@
     <style type="text/css">
       .lit-widget {
         font-family: Arial;
+        display: flex;
+        flex-wrap: nowrap;
       }
       .lit-widget__wordlist {
         user-select: none;
+        width: 90%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
       }
       .lit-widget__word {
         display: inline-block;
@@ -19,6 +26,10 @@
         cursor: pointer;
         font-size: 32px;
         border-radius: 3px;
+        flex-grow: 1;
+        width: calc(100% * (1/10) - 10px - 1px);
+        text-align: center;
+        border-bottom: 1px solid gray;
       }
       .lit-widget__word--status-CORRECT {
         background-color: #def1e1;
@@ -31,6 +42,24 @@
       .lit-widget__word--status-IMPLIED_CORRECT {
         background-color: #def1e1;
         color: #008e16;
+      }
+      .lit-widget__rowControls {
+        width: 10%;
+        display: flex; 
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: center; 
+        align-items: center;
+      }
+      .lit-widget__rowControls button{
+        display: inline-block;
+        padding: 11px 5px;
+        margin: 2px 0.5px;
+        cursor: pointer;
+        font-size: 26px;
+        border-radius: 3px;
+        flex-grow: 1;
+        /*height: calc(100% * (1/10) - 10px - 1px);*/
       }
     </style>
   </head>

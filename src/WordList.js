@@ -17,8 +17,8 @@ export class WordList {
         });
     }));
   }
-  toggleWordStatus = ({index}) => {
-    let status = CORRECT;
+  toggleWordStatus = ({index}, isCorrect=true) => {
+    let status = (isCorrect) ? CORRECT : INCORRECT;
     let words = this.words;
     if (words.getIn([index, 'status']) === CORRECT) {
       status = INCORRECT;
@@ -32,7 +32,8 @@ export class WordList {
     }
     this.words = words;
     if (index + 1 === words.size) {
-      console.log('they have finished all the words. Are they ready to move on?')
+      console.log('they have finished all the words. Are they ready to move on?');
+      console.log(this.words.toJS());
     }
     return this;
   }

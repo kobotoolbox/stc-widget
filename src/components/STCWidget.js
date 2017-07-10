@@ -4,6 +4,8 @@ import {bemComponents} from '../reactBemComponents';
 const TIMER_PREPARED = 'TIMER_PREPARED';
 const TIMER_INPROGRESS = 'TIMER_INPROGRESS';
 const TIMER_COMPLETE = 'TIMER_COMPLETE';
+const TIMER_MAX_REMAINING = 60;
+const WORDS_PER_ROW = 10;
 
 const bem = bemComponents({
   LitWidget: 'lit-widget',
@@ -12,6 +14,7 @@ const bem = bemComponents({
   LitWidget__button: ['lit-widget__button', '<button>'],
 
   LitWidget__wordlist: 'lit-widget__wordlist',
+  LitWidget__rowControls: 'lit-widget__rowControls',
   LitWidget__word: 'lit-widget__word',
 
   LitWidget__time: 'lit-widget__time',
@@ -21,23 +24,32 @@ const bem = bemComponents({
 // a placeholder function to wrap strings which will need translation
 function t(str) { return str; }
 
-
 export class STCWidget extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
       // stage: TIMER_INPROGRESS,
       stage: TIMER_PREPARED,
-      remaining: 60,
+      remaining: TIMER_MAX_REMAINING,
       words: props.words,
     };
+    this.toggleRowStatus = this.toggleRowStatus.bind(this);
+  }
+  componentWillUnmount = ()=> {
+    clearInterval(this.interval);
   }
   start = ()=> {
-    log(`start the timer now for ${this.props.remaining} seconds`);
     this.setState({
       stage: TIMER_INPROGRESS,
-      remaining: 60,
+      remaining: TIMER_MAX_REMAINING,
     });
+    this.interval = setInterval(this.tick, 1000);
+  }
+  tick = ()=> {
+    this.setState({remaining: this.state.remaining - 1});
+    if (this.state.remaining <= 0) {
+      clearInterval(this.interval);
+    }
   }
   finish = ()=> {
     this.props.onComplete(this.state.words.export());
@@ -48,6 +60,16 @@ export class STCWidget extends React.Component {
     this.setState({
       words: words.toggleWordStatus({index})
     });
+  }
+  toggleRowStatus = (rowIndex, isCorrect) => {
+    let myWordsList = this.state.words;
+    const start = rowIndex * WORDS_PER_ROW,
+    end = (start + WORDS_PER_ROW <= myWordsList.words.size) ? start + WORDS_PER_ROW : myWordsList.words.size;
+    for (var index = start ; index < end; index++) {
+      this.setState({
+        words: myWordsList.toggleWordStatus({index}, isCorrect)
+      });
+    }
   }
   render () {
     switch (this.state.stage) {
@@ -63,7 +85,9 @@ export class STCWidget extends React.Component {
         );
       case TIMER_INPROGRESS:
         let promptingForValue = false,
-          words = this.state.words.words;
+          words = this.state.words.words,
+          rowsCount = Math.ceil(words.size / WORDS_PER_ROW);
+          
         return (
           <bem.LitWidget m={{promptingForValue}}>
             <bem.LitWidget__header>
@@ -87,6 +111,9 @@ export class STCWidget extends React.Component {
                   );
               })}
             </bem.LitWidget__wordlist>
+            <bem.LitWidget__rowControls>
+              {[...Array(rowsCount)].map((e, i) => <ToggleRowButton toggleRowStatus={this.toggleRowStatus} rowIndex={i} key={i}>Toggle</ToggleRowButton>)}
+            </bem.LitWidget__rowControls>
           </bem.LitWidget>
         );
       case TIMER_COMPLETE:
@@ -103,5 +130,25 @@ export class STCWidget extends React.Component {
           </bem.LitWidget>
         );
     }
+  }
+}
+
+class ToggleRowButton extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      isCorrect: true,
+    };
+  }
+  handleClick = () => {
+    console.log("isCorrect: ", !this.state.isCorrect);
+    this.setState({
+      isCorrect: !this.state.isCorrect,
+    }, ()=> this.props.toggleRowStatus(this.props.rowIndex, this.state.isCorrect));
+  }
+  render() {
+    return (
+      <button onClick={this.handleClick}>{t("Toggle")}</button>
+    )
   }
 }
