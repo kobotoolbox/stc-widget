@@ -8,7 +8,15 @@
     <style type="text/css">
       .lit-widget {
         font-family: Arial;
+        padding: 20px;
+      }
+      .lit-widget__header {
         display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+      }
+      .lit-widget__body {
+        display: flex; 
         flex-wrap: nowrap;
       }
       .lit-widget__wordlist {
@@ -47,7 +55,7 @@
         width: 10%;
         display: flex; 
         flex-wrap: wrap;
-        flex-direction: column;
+        /*flex-direction: column;*/
         justify-content: center; 
         align-items: center;
       }
@@ -59,7 +67,7 @@
         font-size: 26px;
         border-radius: 3px;
         flex-grow: 1;
-        /*height: calc(100% * (1/10) - 10px - 1px);*/
+        width: 90%;
       }
     </style>
   </head>

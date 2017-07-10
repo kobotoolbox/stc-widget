@@ -33,7 +33,6 @@ export class WordList {
     this.words = words;
     if (index + 1 === words.size) {
       console.log('they have finished all the words. Are they ready to move on?');
-      console.log(this.words.toJS());
     }
     return this;
   }

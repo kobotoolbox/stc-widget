@@ -45,15 +45,31 @@ function stc (element, params) {
 }
 
 stc(document.getElementById("app"), {
-  seconds: 60,
-  flashes: [
+  seconds: 10,
+  actions: [
     {
-      seconds: 30,
+      time: 30,
       message: "please select the current word",
       code: "30s_current_word",
+      type: "FLASH",
+      conditions: null
     },
+    // {
+    //   time: 10,
+    //   message: "please select the current word",
+    //   code: "",
+    //   type: "FINISH",
+    //   wordConditions: {
+    //     status: 'READ',
+    //     count: 10,
+    //   }
+    // },
+  ],
+  stops: [
+    
   ],
   words: new WordList(testwords),
 }).then(function (params) {
-  console.log("Widget completed with params", params);
+  console.log("Widget completed with params: ");
+  console.log(params);
 });
