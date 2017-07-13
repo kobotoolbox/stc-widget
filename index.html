@@ -5,15 +5,38 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STC Literacy Widget</title>
+    <link rel="stylesheet" type="text/css" href="/enketo.css">
     <style type="text/css">
       .lit-widget {
         font-family: Arial;
         padding: 20px;
       }
+      .lit-widget.conclude_task {
+        /*background: #FF4C00;*/
+      }
+      .lit-widget.select_current_word {
+        /*background: #E84C3D;*/
+      }
       .lit-widget__header {
         display: flex;
         flex-wrap: nowrap;
         justify-content: space-between;
+      }
+      .lit-widget__time {
+        font-size: 30px;
+      }
+      .lit-widget__notification {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        width: 100%;
+        transform: translateX(-50%);
+        text-align: center;
+        padding: 15px;
+        font-weight: bold;
+        background: red;
+        color: white;
+        z-index: 99;
       }
       .lit-widget__body {
         display: flex; 
@@ -46,10 +69,12 @@
       .lit-widget__word--status-INCORRECT {
         background-color: #f3cc9b;
         color: #86500d;
+        text-decoration: line-through;
       }
       .lit-widget__word--status-IMPLIED_CORRECT {
         background-color: #def1e1;
-        color: #008e16;
+        color: #006710;
+        opacity: 0.7;
       }
       .lit-widget__rowControls {
         width: 10%;
@@ -68,6 +93,10 @@
         border-radius: 3px;
         flex-grow: 1;
         width: 90%;
+      }
+      .lit-widget__footer {
+        padding: 20px;
+        text-align: center;
       }
     </style>
   </head>

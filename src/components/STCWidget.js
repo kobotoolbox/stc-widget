@@ -6,13 +6,24 @@ const TIMER_PREPARED = 'TIMER_PREPARED';
 const TIMER_INPROGRESS = 'TIMER_INPROGRESS';
 const TIMER_COMPLETE = 'TIMER_COMPLETE';
 const WORDS_PER_ROW = 10;
-
+const NOTIFICATION_CLASS='show-notification';
+const OPERATORS = {
+  "==": (x, y) => { return x == y; },
+  "===": (x, y) => { return x === y; },
+  ">": (x, y) => { return x > y; },
+  "<": (x, y) => { return x < y; },
+  "<=": (x, y) => { return x <= y; },
+  ">=": (x, y) => { return x >= y; },
+  "!=": (x, y) => { return x != y; },
+  "!==": (x, y) => { return x !== y; },
+}
 const bem = bemComponents({
   LitWidget: 'lit-widget',
 
   LitWidget__header: 'lit-widget__header',
-  LitWidget__button: ['lit-widget__button', '<button>'],
+  LitWidget__button: ['btn',  '<button>'],
   LitWidget__title: 'lit-widget__title',
+  LitWidget__notification: 'lit-widget__notification',
 
   LitWidget__body: 'lit-widget__body',
   LitWidget__footer: 'lit-widget__footer',
@@ -32,11 +43,16 @@ export class STCWidget extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      // stage: TIMER_INPROGRESS,
       stage: TIMER_PREPARED,
       remaining: this.props.seconds,
       words: props.words,
     };
+    this.initialNotificationState = Object.freeze({ 
+      message: null,
+      shown: false,
+      code: null,
+    });
+    this.flashNotification = this.initialNotificationState;
     this.toggleRowStatus = this.toggleRowStatus.bind(this);
   }
   componentWillUnmount = ()=> {
@@ -50,44 +66,47 @@ export class STCWidget extends React.Component {
     this.interval = setInterval(this.tick, 1000);
   }
   tick = ()=> {
-    this.setState({remaining: this.state.remaining - 1}, ()=> {
-      this.props.actions.map(action => {
-        if(this.state.remaining == action.time) {
-          if(this.checkActionCondition(action.wordsCondition)){
-            switch(action.type){
-              case "FINISH":
-                this.finish();
-                break;
-              case "FLASH":
-                alert(action.message);
-                break;
-            }
+    const remaining = this.state.remaining - 1;
+    if(remaining >= 0) {
+      this.setState({ remaining, }, ()=> {
+        this.props.actions.map(action => {
+          if(this.state.remaining == action.time) {
+            this.triggerAction(action);
           }
-        }
+        });
       });
-    });
+    }
   }
   checkActionCondition(condition) {
-    const operators = {
-      "==": (x, y) => { return x == y; },
-      "===": (x, y) => { return x === y; },
-      ">": (x, y) => { return x > y; },
-      "<": (x, y) => { return x < y; },
-      "<=": (x, y) => { return x <= y; },
-      ">=": (x, y) => { return x >= y; },
-      "!=": (x, y) => { return x != y; },
-      "!==": (x, y) => { return x !== y; },
-    }
     if(condition != null) {
       const count = this.state.words.countWordsByStatus(condition.status);
-      return operators[condition.operator](count, condition.value);
+      console.log('status: ', condition.status, ' count: ', count, ' required: ', condition.value);
+      return OPERATORS[condition.operator](count, condition.value);
     }else{
       return true;
     }
   }
+  triggerAction = (action) => {
+    if(this.checkActionCondition(action.wordsCondition)){
+      if(action.code == 'time_out'){
+        this.finish();
+      }else{
+        this.flash(action);
+      }
+    }
+  }
   finish = ()=> {
+    this.setState({ stage: TIMER_COMPLETE, }, ()=> {
+      this.props.onComplete(this.state.words.export())
+    });
     clearInterval(this.interval);
-    this.setState({ stage: TIMER_COMPLETE, }, this.props.onComplete(this.state.words.export()));
+  }
+  flash = (notification) => {
+    this.flashNotification = {
+      message: notification.message,
+      shown: true,
+      code: notification.code,
+    }
   }
   clickWord = (event) => {
     let words = this.state.words;
@@ -102,9 +121,28 @@ export class STCWidget extends React.Component {
     end = (start + WORDS_PER_ROW <= myWordsList.words.size) ? start + WORDS_PER_ROW : myWordsList.words.size;
     for (var index = start ; index < end; index++) {
       this.setState({
-        words: myWordsList.toggleWordStatus({index}, isCorrect)
+        words: myWordsList.toggleWordStatus({index}, isCorrect),
       });
     }
+  }
+  setMilestoneWord = (index) => {
+    this.state.words.setMilestoneWord(index);
+    this.setState({
+      words: this.state.words.toggleWordStatus({index})
+    });
+    this.flashNotification = this.initialNotificationState;
+  }
+  formatTime = (time) => {
+    var hrs = ~~(time / 3600);
+    var mins = ~~((time % 3600) / 60);
+    var secs = time % 60;
+    var formattedTime = "";
+    if (hrs > 0) {
+        formattedTime += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    }
+    formattedTime += "" + mins + ":" + (secs < 10 ? "0" : "");
+    formattedTime += "" + secs;
+    return formattedTime;
   }
   render () {
     switch (this.state.stage) {
@@ -113,7 +151,7 @@ export class STCWidget extends React.Component {
           <bem.LitWidget>
             <bem.LitWidget__header>
               <bem.LitWidget__title>
-                {TITLE_TEXT}
+                <h2>{TITLE_TEXT}</h2>
               </bem.LitWidget__title>
               <bem.LitWidget__button onClick={this.start}>
                 {t('Start')}
@@ -125,17 +163,18 @@ export class STCWidget extends React.Component {
         let promptingForValue = false,
           words = this.state.words.words,
           rowsCount = Math.ceil(words.size / WORDS_PER_ROW);
-          
+        const widgetClassName = (this.flashNotification.shown) ? NOTIFICATION_CLASS: '';
         return (
-          <bem.LitWidget m={{promptingForValue}}>
+          <bem.LitWidget m={{promptingForValue}} className={ `${widgetClassName} ${this.flashNotification.code}` }>
             <bem.LitWidget__header>
               <bem.LitWidget__title>
-                {TITLE_TEXT}
+                <h2>{TITLE_TEXT}</h2>
               </bem.LitWidget__title>
               <bem.LitWidget__time>
-                {this.state.remaining}
+                {this.formatTime(this.state.remaining)}
               </bem.LitWidget__time>
             </bem.LitWidget__header>
+            {this.flashNotification.shown && <bem.LitWidget__notification>{this.flashNotification.message} </bem.LitWidget__notification>}
             <bem.LitWidget__body>
               <bem.LitWidget__wordlist>
                 {words.map((word)=>{
@@ -145,6 +184,9 @@ export class STCWidget extends React.Component {
                         onClick={this.clickWord}
                         data-index={index}
                         key={`word-${index}`}>
+                        <div className="question">
+                          { this.flashNotification.code == 'select_current_word' && <input type="checkbox" onClick={() => this.setMilestoneWord(index)}/> }
+                        </div>
                         {word.get('text')}
                       </bem.LitWidget__word>
                     );
@@ -162,18 +204,22 @@ export class STCWidget extends React.Component {
           </bem.LitWidget>
         );
       case TIMER_COMPLETE:
+        const correctWordsCount = this.state.words.countWordsByStatus('CORRECT');
+        const wordsPerMinute = (60 * correctWordsCount / this.state.remaining).toFixed(2);
         return (
           <bem.LitWidget m={{promptingForValue}}>
             <bem.LitWidget__header>
               <bem.LitWidget__title>
-                {TITLE_TEXT}
+                <h2>{TITLE_TEXT}</h2>
               </bem.LitWidget__title>
               <bem.LitWidget__time>
                 {0}
               </bem.LitWidget__time>
             </bem.LitWidget__header>
             <bem.LitWidget__footer>
-              Finished
+              <h3>{t('Finished')}</h3>
+              <p>{t('The student read a total of:')} {correctWordsCount}  {t('words correctly')}</p>
+              <p>{t('The student read at a rate of:')} {wordsPerMinute}  {t('words per minute')}</p>
             </bem.LitWidget__footer>
           </bem.LitWidget>
         );
@@ -195,7 +241,7 @@ class ToggleRowButton extends React.Component {
   }
   render() {
     return (
-      <button onClick={this.handleClick}>{t("Toggle")}</button>
+      <button onClick={this.handleClick}><i className={(this.state.isCorrect) ? 'fa fa-toggle-off' : 'fa fa-toggle-on'}></i></button>
     )
   }
 }

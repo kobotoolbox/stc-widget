@@ -48,29 +48,27 @@ stc(document.getElementById("app"), {
   seconds: 60,
   actions: [
     {
-      time: 0,
-      message: "Finished!!!",
-      code: "30s_current_word",
-      type: "FINISH",
-      wordsCondition: null
+      time: 50,
+      message: "Child has not read 5 words in 10 seconds, please conclude the task.",
+      code: "conclude_task",
+      wordsCondition: {
+        status: 'CORRECT',
+        operator: "<",
+        value: 5,
+      },
     },
     {
       time: 30,
-      message: "please select the current word",
-      code: "...",
-      type: "FLASH",
-      wordsCondition: null
+      message: "Please select the current word.", //This sets the value of the milestone word
+      code: "select_current_word",
+      // type: "FLASH",
+      wordsCondition: null,
     },
     {
-      time: 50,
-      message: "Child has not read 5 words in 10 seconds",
-      code: "...",
-      type: "FINISH",
-      wordsCondition: {
-        status: 'UNREAD',
-        operator: ">",
-        value: 5,
-      }
+      time: 0,
+      message: "Task Done!",
+      code: "time_out",
+      wordsCondition: null,
     },
   ],
   words: new WordList(testwords),

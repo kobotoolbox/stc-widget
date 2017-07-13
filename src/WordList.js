@@ -1,6 +1,6 @@
 const UNREAD = 'UNREAD';
 const CORRECT = 'CORRECT';
-const IMPLIED_CORRECT = 'IMPLIED_CORRECT';
+// const IMPLIED_CORRECT = 'IMPLIED_CORRECT';
 const INCORRECT = 'INCORRECT';
 
 import {Map, fromJS, List} from 'immutable';
@@ -16,6 +16,7 @@ export class WordList {
           index: index,
         });
     }));
+    // this.milestoneWord = null;
   }
   toggleWordStatus = ({index}, isCorrect=true) => {
     let status = (isCorrect) ? CORRECT : INCORRECT;
@@ -27,7 +28,7 @@ export class WordList {
     words = words.setIn([index, 'status'], status);
     for (let i=0; i < index; i++) {
       if (words.get(i).get('status') === UNREAD) {
-        words = words.setIn([i, 'status'], IMPLIED_CORRECT);
+        words = words.setIn([i, 'status'], CORRECT);
       }
     }
     this.words = words;
@@ -37,11 +38,20 @@ export class WordList {
     return this;
   }
   countWordsByStatus = (passedStatus) => {
-    return this.words.toJS().filter(word => word.status == passedStatus).length;
+    const wordsFiltered = this.words.toJS().filter(word => {
+      console.log('dm:' + word.status, passedStatus);
+      return word.status == passedStatus;
+    });
+    console.log(wordsFiltered);
+    return wordsFiltered.length;
+  }
+  setMilestoneWord = (index) => {
+    this.milestoneWord = this.words.get(index);
   }
   export () {
     return {
       words: this.words.toJS(),
+      milestoneWord: this.milestoneWord.toJS(),
     }
   }
 }
