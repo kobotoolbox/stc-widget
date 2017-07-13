@@ -80,7 +80,6 @@ export class STCWidget extends React.Component {
   checkActionCondition(condition) {
     if(condition != null) {
       const count = this.state.words.countWordsByStatus(condition.status);
-      console.log('status: ', condition.status, ' count: ', count, ' required: ', condition.value);
       return OPERATORS[condition.operator](count, condition.value);
     }else{
       return true;
