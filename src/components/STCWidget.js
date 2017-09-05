@@ -80,6 +80,10 @@ export class STCWidget extends React.Component {
   checkActionCondition(condition) {
     if(condition != null) {
       const count = this.state.words.countWordsByStatus(condition.status);
+      // Returns the results of the count vs condition.value based on the passed condition string
+      // The condition string is used to locate the comparaison function since all those functions are stored in the OPERATORS array
+      // that's indexed using the operator
+      // for example OPERATORS['==='] would result in a function that checks whether count === condition.value.
       return OPERATORS[condition.operator](count, condition.value);
     }else{
       return true;
