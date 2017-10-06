@@ -16,7 +16,6 @@ export class WordList {
           index: index,
         });
     }));
-    // this.milestoneWord = null;
   }
   toggleWordStatus = ({index}, isCorrect=true) => {
     let status = (isCorrect) ? CORRECT : INCORRECT;
@@ -41,16 +40,18 @@ export class WordList {
     const wordsFiltered = this.words.toJS().filter(word => {
       return word.status == passedStatus;
     });
-    console.log(wordsFiltered);
     return wordsFiltered.length;
   }
   setMilestoneWord = (index) => {
-    this.milestoneWord = this.words.get(index);
+    this.milestoneWord = index;
+  }
+  getMilestone = () => {
+    return this.words.get(this.milestoneWord).toJS()
   }
   export () {
     return {
       words: this.words.toJS(),
-      milestoneWord: this.milestoneWord.toJS(),
+      milestoneWord: this.milestoneWord
     }
   }
 }

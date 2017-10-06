@@ -58,7 +58,7 @@ stc(document.getElementById("app"), {
       },
     },
     {
-      time: 30,
+      time: 55,
       message: "Please select the current word.", //This sets the value of the milestone word
       code: "select_current_word",
       // type: "FLASH",

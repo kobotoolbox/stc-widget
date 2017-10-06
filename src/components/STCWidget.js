@@ -209,6 +209,7 @@ export class STCWidget extends React.Component {
       case TIMER_COMPLETE:
         const correctWordsCount = this.state.words.countWordsByStatus('CORRECT');
         const wordsPerMinute = (60 * correctWordsCount / this.state.remaining).toFixed(2);
+        const finalMilestoneWord = this.state.words.getMilestone();
         return (
           <bem.LitWidget m={{promptingForValue}}>
             <bem.LitWidget__header>
@@ -223,6 +224,13 @@ export class STCWidget extends React.Component {
               <h3>{t('Finished')}</h3>
               <p>{t('The student read a total of:')} {correctWordsCount}  {t('words correctly')}</p>
               <p>{t('The student read at a rate of:')} {wordsPerMinute}  {t('words per minute')}</p>
+              <p>{t('Milestone Word:')}</p>
+              <ul>
+                <li>Text: {finalMilestoneWord.text}</li>
+                <li>Status: {finalMilestoneWord.status}</li>
+                <li>Index: {finalMilestoneWord.index}</li>
+              </ul>
+              
             </bem.LitWidget__footer>
           </bem.LitWidget>
         );
