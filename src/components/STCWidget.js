@@ -129,7 +129,7 @@ export class STCWidget extends React.Component {
     }
   }
   setMilestoneWord = (index) => {
-    this.state.words.setMilestoneWord(index);
+    this.state.words.setMilestoneWord(index, this.state.remaining);
     this.setState({
       words: this.state.words.toggleWordStatus({index})
     });
@@ -210,6 +210,7 @@ export class STCWidget extends React.Component {
         const correctWordsCount = this.state.words.countWordsByStatus('CORRECT');
         const wordsPerMinute = (60 * correctWordsCount / this.state.remaining).toFixed(2);
         const finalMilestoneWord = this.state.words.getMilestone();
+        const CWPM = ((finalMilestoneWord.index - finalMilestoneWord.incorrectAtMilestone) * (60/finalMilestoneWord.milestoneTime)).toFixed(2)
         return (
           <bem.LitWidget m={{promptingForValue}}>
             <bem.LitWidget__header>
@@ -224,12 +225,12 @@ export class STCWidget extends React.Component {
               <h3>{t('Finished')}</h3>
               <p>{t('The student read a total of:')} {correctWordsCount}  {t('words correctly')}</p>
               <p>{t('The student read at a rate of:')} {wordsPerMinute}  {t('words per minute')}</p>
-              <p>{t('Milestone Word:')}</p>
-              <ul>
-                <li>Text: {finalMilestoneWord.text}</li>
-                <li>Status: {finalMilestoneWord.status}</li>
-                <li>Index: {finalMilestoneWord.index}</li>
-              </ul>
+              <h4>{t('Statistics:')}</h4>
+              <p>Text: {finalMilestoneWord.text}</p>
+              <p>Status: {finalMilestoneWord.status}</p>
+              <p>Index: {finalMilestoneWord.index}</p>
+              <p>Incorret at Milestone: {finalMilestoneWord.incorrectAtMilestone}</p>
+              <p>CWPM: {CWPM}</p>
               
             </bem.LitWidget__footer>
           </bem.LitWidget>

@@ -42,16 +42,26 @@ export class WordList {
     });
     return wordsFiltered.length;
   }
-  setMilestoneWord = (index) => {
+  setMilestoneWord = (index, time) => {
     this.milestoneWord = index;
+    this.incorrectAtMilestone = this.countWordsByStatus('INCORRECT');
+    this.milestoneTime = time;
+    console.log(this.incorrectAtMilestone)
   }
   getMilestone = () => {
-    return this.words.get(this.milestoneWord).toJS()
+    const milestoneInfo = this.words.get(this.milestoneWord).toJS();
+    return {
+      ...milestoneInfo,
+      incorrectAtMilestone: this.incorrectAtMilestone,
+      milestoneTime: this.milestoneTime
+    }
   }
   export () {
     return {
       words: this.words.toJS(),
-      milestoneWord: this.milestoneWord
+      milestoneWord: this.milestoneWord,
+      incorrectAtMilestone: this.incorrectAtMilestone,
+      milestoneTime: this.milestoneTime
     }
   }
 }
