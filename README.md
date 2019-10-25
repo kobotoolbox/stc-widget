@@ -1,3 +1,5 @@
+Superseded by https://github.com/kobotoolbox/enketo-literacy-test-widget
+
 STC Widget
 =========================
 
